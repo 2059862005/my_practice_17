@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - Django REST Framework JWT</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <style>
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group label .required {
+            color: #e74c3c;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group input.error {
+            border-color: #e74c3c;
+        }
+        
+        .code-input-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .code-input-group input {
+            flex: 1;
+        }
+        
+        .btn-get-code {
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: opacity 0.3s;
+        }
+        
+        .btn-get-code:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+        
+        .btn-get-code:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s, opacity 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .login-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .login-tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            color: #999;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .login-tab.active {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            margin-bottom: -2px;
+        }
+        
+        .login-method {
+            display: none;
+        }
+        
+        .login-method.active {
+            display: block;
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .links p {
+            margin: 8px 0;
+            color: #666;
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+        }
+        
+        .message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #e74c3c;
+            border: 1px solid #fcc;
+        }
+        
+        .success-message {
+            background: #efe;
+            color: #27ae60;
+            border: 1px solid #cfc;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-page">
+        <div class="login-container">
+            <h1 class="login-title">用户登录</h1>
+            
+            <div class="login-tabs">
+                <div class="login-tab active" data-tab="password">密码登录</div>
+                <div class="login-tab" data-tab="code">验证码登录</div>
+            </div>
+            
+            <div id="error" class="message error-message"></div>
+            <div id="success" class="message success-message"></div>
+            
+            <form id="loginForm" class="login-method active">
+                <div class="form-group">
+                    <label for="email">邮箱地址 <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" required placeholder="请输入邮箱地址" autocomplete="email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">密码 <span class="required">*</span></label>
+                    <input type="password" id="password" name="password" required placeholder="请输入密码" autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="btn-login">登 录</button>
+            </form>
+            
+            <form id="codeLoginForm" class="login-method">
+                <div class="form-group">
+                    <label for="code_email">邮箱地址 <span class="required">*</span></label>
+                    <input type="email" id="code_email" name="email" required placeholder="请输入邮箱地址" autocomplete="email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="verification_code">验证码 <span class="required">*</span></label>
+                    <div class="code-input-group">
+                        <input type="text" id="verification_code" name="code" required placeholder="请输入验证码" autocomplete="off" maxlength="6">
+                        <button type="button" id="get_verification_code" class="btn-get-code">获取验证码</button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-login">验证码登录</button>
+            </form>
+            
+            <div class="links">
+                <p>还没有账号？<a href="/register/">立即注册</a></p>
+                <p><a href="/">返回首页</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{% static 'auth.js' %}"></script>
+    <script>
+        const loginTabs = document.querySelectorAll('.login-tab');
+        const loginMethods = document.querySelectorAll('.login-method');
+        
+        loginTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                loginTabs.forEach(t => t.classList.remove('active'));
+                loginMethods.forEach(m => m.classList.remove('active'));
+                
+                this.classList.add('active');
+                if (tabName === 'password') {
+                    document.getElementById('loginForm').classList.add('active');
+                } else {
+                    document.getElementById('codeLoginForm').classList.add('active');
+                }
+            });
+        });
+        
+        document.getElementById('get_verification_code').addEventListener('click', async function() {
+            const email = document.getElementById('code_email').value.trim();
+            const btn = this;
+            
+            if (!email) {
+                showError('请输入邮箱地址');
+                return;
+            }
+            
+            if (!validateEmail(email)) {
+                showError('请输入有效的邮箱地址');
+                return;
+            }
+            
+            btn.disabled = true;
+            let countdown = 60;
+            
+            try {
+                const response = await fetch('/api/auth/send_code/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({ email, type: 'login' })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess('验证码已发送到您的邮箱');
+                    const timer = setInterval(() => {
+                        countdown--;
+                        btn.textContent = `${countdown}秒后重发`;
+                        if (countdown <= 0) {
+                            clearInterval(timer);
+                            btn.disabled = false;
+                            btn.textContent = '获取验证码';
+                        }
+                    }, 1000);
+                } else {
+                    showError(data.error || '发送失败');
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                showError('网络错误，请稍后重试');
+                btn.disabled = false;
+            }
+        });
+        
+        document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        
+        document.getElementById('codeLoginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('code_email').value.trim();
+            const code = document.getElementById('verification_code').value.trim();
+            const btn = this.querySelector('button[type="submit"]');
+            
+            if (!email || !code) {
+                showError('请填写邮箱和验证码');
+                return;
+            }
+            
+            setLoading(btn, true);
+            
+            try {
+                const response = await fetch('/api/auth/login_with_code/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({ email, code })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showSuccess('登录成功！正在跳转...');
+                    Auth.setToken(data.token);
+                    Auth.setRefresh(data.refresh);
+                    Auth.setUser(data.user);
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                } else {
+                    showError(data.error || '登录失败');
+                }
+            } catch (error) {
+                showError('网络错误，请稍后重试');
+            } finally {
+                setLoading(btn, false);
+            }
+        });
+    </script>
+</body>
+
+</html>

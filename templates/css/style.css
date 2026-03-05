@@ -1,0 +1,235 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+header {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #667eea;
+    text-decoration: none;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #667eea;
+}
+
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    padding-top: 60px;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+}
+
+.hero .subtitle {
+    font-size: 1.5rem;
+    opacity: 0.95;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto 30px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 35px;
+    background: white;
+    color: #667eea;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: bold;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.section {
+    padding: 80px 0;
+}
+
+.bg-gray {
+    background: #f8f9fa;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 50px;
+    color: #333;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h3 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+}
+
+.card ul {
+    list-style: none;
+}
+
+.card li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.card li:last-child {
+    border-bottom: none;
+}
+
+.api-list {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.api-item {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.api-item:last-child {
+    border-bottom: none;
+}
+
+.method {
+    padding: 5px 12px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 12px;
+    margin-right: 10px;
+}
+
+.method-get {
+    background: #28a745;
+    color: white;
+}
+
+.method-post {
+    background: #007bff;
+    color: white;
+}
+
+code {
+    background: #f4f4f4;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+footer {
+    background: rgba(255, 255, 255, 0.95);
+    text-align: center;
+    padding: 30px 0;
+    margin-top: 60px;
+}
+
+footer a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero .subtitle {
+        font-size: 1.2rem;
+    }
+    
+    nav {
+        display: none;
+    }
+    
+    .api-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
